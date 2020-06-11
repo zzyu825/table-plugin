@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./plugin/table.css">
+</head>
+<body>
+    <div class="container">
+
+    </div>
+    <div class="pager-container"></div>
+    <script src="./students.js"></script>
+    <script src="./plugin/table.js"></script>
+    <script>
+        const tab = new Table({ // 配置对象
+            columns: [ // 显示多少列
+                {
+                    title: '学号', // 每一列的标题
+                    propName: 'sNo' // 数据对应的属性名
+                },
+                {
+                    title: '姓名',
+                    propName: 'name',
+                    render(val, data) {
+                        return `<a href="./detail/${data.sNo}">${val}</a>`
+                    }
+                },
+                {
+                    title: '性别',
+                    propName: 'sex',
+                    render(val, data) {
+                        // val表示单个学生数据中对应属性值 data表示单个学生数据中所有属性
+                        return val === 1 ? "女" : "男"
+                    }
+                },
+                {
+                    title: '操作',
+                    propName: 'id',
+                    render(val, data) {
+                        return `<button>编辑</button><button>删除</button>`
+                    }
+                }
+            ],
+            container: document.querySelector('.container'),
+            pageOptions: { // 针对分页的配置
+                pageSize: 1
+            }
+        });
+        // getStudents().then(resp => {
+        //     // 配置数据源，用于决定显示的行数
+        //     tab.dataSource = resp.findByPage;
+        // })
+        (async () => {
+            const resp = await getStudents();
+            tab.dataSource = resp.findByPage;
+            tab.dataCount = resp.cont;
+
+            tab.pager.onPageChange = async newPage => {
+                const resp = await getStudents(newPage);
+                tab.dataSource = resp.findByPage;
+                tab.dataCount = rep.cont;
+            }
+        })()
+
+        // const pager = new Pager({
+        //     total: 50, // 总数据量
+        //     current: 1, // 当前页码
+        //     container: document.querySelector('.pager-container'), // 容器
+        //     pageSize: 5, // 页容量(每页展示的数据量)
+        //     panelNumber: 5 // 
+        // })
+        // pager.onPageChange = newPage => {
+        //     console.log(newPage)
+        // }
+    </script>
+</body>
+</html>
